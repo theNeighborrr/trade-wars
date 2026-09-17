@@ -1,0 +1,29 @@
+/* Mobile Markets: one continuous vertical scroll, no horizontal canvases */
+@media (max-width:620px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .app-shell,.main-content,.view,[data-view-panel="markets"]{min-width:0;max-width:100%;overflow-x:hidden}
+
+  /* Trading hubs become a vertical list instead of a sideways carousel. */
+  .hub-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;overflow:visible!important;margin-right:0!important;padding-right:0!important;padding-bottom:0!important;width:100%!important}
+  .hub-card{min-width:0!important;width:100%!important}
+
+  /* Remove the legacy 780px market canvas that caused side-to-side scrolling. */
+  .market-table-wrap{overflow:visible!important;min-width:0!important;width:100%!important;max-width:100%!important}
+  .market-row{min-width:0!important;width:100%!important;max-width:100%!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;overflow:hidden}
+  .market-row>div{min-width:0}
+  .market-row>div:nth-child(1){grid-column:1/-1!important}
+  .market-row>div:nth-child(2),.market-row>div:nth-child(3),.market-row>div:nth-child(4){grid-column:auto!important}
+  .market-row>div:nth-child(5){display:flex!important;grid-column:1/-1!important}
+  .market-row>div:nth-child(6){display:block!important;grid-column:1/-1!important;width:100%!important;max-width:100%!important}
+
+  /* Keep the slider and stacked actions entirely inside each resource card. */
+  .trade-column{grid-template-columns:minmax(0,1fr) 112px!important;width:100%!important;max-width:100%!important;min-width:0!important;gap:12px!important}
+  .trade-qty,.qty-slider-wrap,.qty-slider{min-width:0!important;max-width:100%!important}
+  .trade-actions-stack{min-width:0!important;width:112px!important;max-width:112px!important}
+}
+
+@media (max-width:390px){
+  .market-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;padding:14px!important}
+  .trade-column{grid-template-columns:minmax(0,1fr) 96px!important;gap:9px!important}
+  .trade-actions-stack{width:96px!important;max-width:96px!important}
+}
