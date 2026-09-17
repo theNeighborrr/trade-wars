@@ -1,0 +1,9 @@
+{
+  "name": "Trade Wars — Global Market Strategy",
+  "short_name": "Trade Wars",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#071018",
+  "theme_color": "#071018",
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]
+}
