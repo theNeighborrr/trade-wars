@@ -41,6 +41,20 @@ function upgradeDOM(){
   }
 }
 
+function guardWealthCanvas(){
+  const canvas=document.getElementById('wealthChart');
+  if(!canvas||typeof canvas.getContext!=='function')return;
+  let ctx=null;
+  try{ctx=canvas.getContext('2d');}catch(error){console.warn('Wealth chart canvas unavailable',error);}
+  if(ctx)return;
+  console.warn('Wealth chart disabled: browser returned no 2D canvas context.');
+  canvas.getContext=()=>({
+    setTransform(){},clearRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},
+    strokeStyle:'',lineWidth:1
+  });
+}
+
 addStyles();
 upgradeDOM();
+guardWealthCanvas();
 initUI();
