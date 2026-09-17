@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071018" />
+  <meta name="description" content="Trade Wars — a global market strategy game prototype." />
+  <title>Trade Wars — Global Market Strategy</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell" id="app">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#dashboard" aria-label="Trade Wars home">
+        <span class="brand-mark" aria-hidden="true">TW</span>
+        <span>
+          <strong>TRADE WARS</strong>
+          <small>GLOBAL MARKETS SIM</small>
+        </span>
+      </a>
+
+      <nav class="nav-list" id="desktopNav">
+        <button class="nav-btn is-active" data-view="dashboard"><span>◫</span> Command</button>
+        <button class="nav-btn" data-view="markets"><span>↗</span> Markets</button>
+        <button class="nav-btn" data-view="intel"><span>⌁</span> World Intel</button>
+        <button class="nav-btn" data-view="portfolio"><span>◎</span> Portfolio</button>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="eyebrow">CAMPAIGN</div>
+        <div class="campaign-row"><span>Day</span><strong id="sideDay">1 / 30</strong></div>
+        <div class="progress-track"><div id="campaignProgress" class="progress-fill"></div></div>
+        <p>Build the highest net worth before the campaign closes.</p>
+      </div>
+
+      <div class="sidebar-foot">
+        <span class="status-dot"></span>
+        <span>Simulation feed online</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">GLOBAL TRADING DESK</div>
+          <h1 id="viewTitle">Command Center</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="ghost-btn" id="resetBtn" type="button">Reset Run</button>
+          <button class="primary-btn" id="nextDayBtn" type="button">Advance Day <span>→</span></button>
+        </div>
+      </header>
+
+      <section class="view is-active" data-view-panel="dashboard">
+        <div class="hero-grid">
+          <article class="headline-card panel">
+            <div class="headline-meta">
+              <span class="live-pill">WORLD EVENT</span>
+              <span id="eventRegion">GLOBAL</span>
+              <span id="eventSeverity">SEVERITY 2</span>
+            </div>
+            <h2 id="eventTitle">Shipping insurers raise risk premiums through a key trade corridor</h2>
+            <p id="eventBody">Longer routes and tighter capacity push transport costs higher. Energy and bulk commodities may move with freight.</p>
+            <div class="impact-row" id="impactTags"></div>
+            <div class="headline-foot">
+              <span id="eventDuration">Expected duration: 2–4 days</span>
+              <span class="demo-label">SIMULATED SCENARIO</span>
+            </div>
+          </article>
+
+          <article class="score-card panel">
+            <div class="score-top">
+              <div>
+                <div class="eyebrow">NET WORTH</div>
+                <div class="big-number" id="netWorth">$50,000</div>
+              </div>
+              <div class="rank-badge" id="performanceBadge">START</div>
+            </div>
+            <div class="mini-stat-grid">
+              <div><span>Cash</span><strong id="cashValue">$50,000</strong></div>
+              <div><span>Holdings</span><strong id="holdingsValue">$0</strong></div>
+              <div><span>P/L</span><strong id="pnlValue">$0</strong></div>
+              <div><span>Day</span><strong id="dayValue">1 / 30</strong></div>
+            </div>
+            <canvas id="wealthChart" width="520" height="170" aria-label="Net worth history chart"></canvas>
+          </article>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">TODAY'S BOARD</div>
+            <h2>Markets in motion</h2>
+          </div>
+          <button class="text-btn" data-jump="markets" type="button">View all markets →</button>
+        </div>
+        <div class="market-strip" id="marketStrip"></div>
+
+        <div class="two-col-grid">
+          <article class="panel">
+            <div class="panel-title-row">
+              <div>
+                <div class="eyebrow">POSITIONS</div>
+                <h3>Portfolio snapshot</h3>
+              </div>
+              <button class="text-btn" data-jump="portfolio" type="button">Manage →</button>
+            </div>
+            <div id="portfolioSnapshot" class="snapshot-list"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-title-row">
+              <div>
+                <div class="eyebrow">INTELLIGENCE</div>
+                <h3>Recent shocks</h3>
+              </div>
+              <button class="text-btn" data-jump="intel" type="button">Open feed →</button>
+            </div>
+            <div id="recentEvents" class="event-mini-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="markets">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">MARKET TERMINAL</div>
+            <h2>Buy the reaction. Sell the overreaction.</h2>
+            <p>Each lot is an abstract position. Prices move with event exposure plus ordinary volatility.</p>
+          </div>
+          <div class="cash-chip">Available cash <strong id="marketCash">$50,000</strong></div>
+        </div>
+        <div class="market-table-wrap panel">
+          <div class="market-table-head">
+            <span>Asset</span><span>Price</span><span>Move</span><span>Owned</span><span>Exposure</span><span>Trade</span>
+          </div>
+          <div id="marketTable"></div>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="intel">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">WORLD INTEL</div>
+            <h2>Events are the market.</h2>
+            <p>This prototype uses authored scenario cards. A production version can ingest verified reporting and map it into the same event schema.</p>
+          </div>
+          <div class="legend-box">
+            <span><i class="sev sev1"></i>Low</span>
+            <span><i class="sev sev2"></i>Medium</span>
+            <span><i class="sev sev3"></i>High</span>
+          </div>
+        </div>
+        <div id="intelFeed" class="intel-feed"></div>
+      </section>
+
+      <section class="view" data-view-panel="portfolio">
+        <div class="section-intro">
+          <div>
+            <div class="eyebrow">PORTFOLIO</div>
+            <h2>Risk lives in concentration.</h2>
+            <p>Review cost basis, market value, and unrealized gains across your positions.</p>
+          </div>
+          <div class="portfolio-kpis">
+            <div><span>Invested</span><strong id="investedKpi">$0</strong></div>
+            <div><span>Unrealized</span><strong id="unrealizedKpi">$0</strong></div>
+          </div>
+        </div>
+        <div class="portfolio-layout">
+          <article class="panel">
+            <div id="portfolioTable"></div>
+          </article>
+          <article class="panel allocation-card">
+            <div class="eyebrow">ALLOCATION</div>
+            <h3>Capital at risk</h3>
+            <div class="donut-wrap">
+              <div class="donut" id="allocationDonut"><span id="allocationCenter">0%</span></div>
+            </div>
+            <div id="allocationLegend" class="allocation-legend"></div>
+          </article>
+        </div>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+      <button class="mobile-nav-btn is-active" data-view="dashboard"><span>◫</span><small>Command</small></button>
+      <button class="mobile-nav-btn" data-view="markets"><span>↗</span><small>Markets</small></button>
+      <button class="mobile-nav-btn" data-view="intel"><span>⌁</span><small>Intel</small></button>
+      <button class="mobile-nav-btn" data-view="portfolio"><span>◎</span><small>Portfolio</small></button>
+    </nav>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
