@@ -1,8 +1,10 @@
-import {initUI} from './v02-ui.js?v=7';
+import {initUI} from './v03-ui.js?v=1';
 
 function addStyles(){
-  if(document.querySelector('link[href="v02.css"]')) return;
-  const link=document.createElement('link');link.rel='stylesheet';link.href='v02.css';document.head.appendChild(link);
+  for(const href of ['v02.css','trade-controls.css?v=1']){
+    if(document.querySelector(`link[href="${href}"]`))continue;
+    const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
+  }
 }
 
 function upgradeDOM(){
@@ -54,13 +56,7 @@ function guardWealthCanvas(){
   });
 }
 
-function installStrictModeCompatibility(){
-  if(!Object.prototype.hasOwnProperty.call(globalThis,'events'))globalThis.events=[];
-  if(!Object.prototype.hasOwnProperty.call(globalThis,'owned'))globalThis.owned=[];
-}
-
 addStyles();
 upgradeDOM();
 guardWealthCanvas();
-installStrictModeCompatibility();
 initUI();
