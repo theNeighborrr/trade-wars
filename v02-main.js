@@ -1,4 +1,4 @@
-import {initUI} from './v02-ui.js';
+import {initUI} from './v02-ui.js?v=7';
 
 function addStyles(){
   if(document.querySelector('link[href="v02.css"]')) return;
@@ -54,7 +54,13 @@ function guardWealthCanvas(){
   });
 }
 
+function installStrictModeCompatibility(){
+  if(!Object.prototype.hasOwnProperty.call(globalThis,'events'))globalThis.events=[];
+  if(!Object.prototype.hasOwnProperty.call(globalThis,'owned'))globalThis.owned=[];
+}
+
 addStyles();
 upgradeDOM();
 guardWealthCanvas();
+installStrictModeCompatibility();
 initUI();
