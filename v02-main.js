@@ -1,13 +1,21 @@
-import {initUI} from './v03-ui.js?v=1';
+import {initUI} from './v03-ui.js?v=2';
 
 function addStyles(){
-  for(const href of ['v02.css','trade-controls.css?v=1','mobile-vertical.css?v=1']){
+  for(const href of ['v02.css','trade-controls.css?v=1','mobile-vertical.css?v=1','mobile-ux.css?v=1']){
     if(document.querySelector(`link[href="${href}"]`))continue;
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   }
 }
 
 function upgradeDOM(){
+  const topbar=document.querySelector('.topbar');
+  if(topbar&&!document.getElementById('mobileHud')){
+    const hud=document.createElement('div');
+    hud.id='mobileHud';hud.className='mobile-hud';hud.setAttribute('aria-label','Current campaign status');
+    hud.innerHTML='<div><span>Day</span><strong id="hudDay">1 / 30</strong></div><div><span>Hub</span><strong id="hudHub">NYC</strong></div><div><span>Net worth</span><strong id="hudWorth">$50,000</strong></div>';
+    topbar.after(hud);
+  }
+
   const sideFoot=document.querySelector('.sidebar-foot');
   if(sideFoot&&!document.getElementById('sideHub')){
     const card=document.createElement('div');card.className='sidebar-card hub-sidebar-card';
@@ -31,7 +39,7 @@ function upgradeDOM(){
     if(p)p.textContent='Buy in one hub, travel, and sell into another market. Travel consumes one campaign day and triggers a fresh world event.';
     const table=markets.querySelector('.market-table-wrap');
     const hubSection=document.createElement('div');
-    hubSection.innerHTML='<div class="section-head compact"><div><div class="eyebrow">TRADING HUBS</div><h2>Choose your market</h2></div><span class="muted-note">Current hub is highlighted</span></div><div class="hub-grid" id="hubGrid"></div><div class="section-head compact market-board-head"><div><div class="eyebrow">LOCAL BOARD</div><h2>Current prices</h2></div><span class="muted-note">Tap “Why?” for the move breakdown</span></div>';
+    hubSection.innerHTML='<div class="section-head compact"><div><div class="eyebrow">TRADING HUBS</div><h2>Choose your market</h2></div><span class="muted-note">Current hub is highlighted</span></div><div class="mobile-hub-summary" id="mobileHubSummary"></div><div class="hub-grid" id="hubGrid"></div><div class="section-head compact market-board-head"><div><div class="eyebrow">LOCAL BOARD</div><h2>Current prices</h2></div><span class="muted-note">Tap “Why?” for the move breakdown</span></div>';
     while(hubSection.firstChild)markets.insertBefore(hubSection.firstChild,table);
     const heads=markets.querySelectorAll('.market-table-head span');if(heads[1])heads[1].textContent='Local Price';
   }
@@ -40,6 +48,18 @@ function upgradeDOM(){
     const modal=document.createElement('div');modal.className='modal-backdrop';modal.id='whyModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','whyAsset');
     modal.innerHTML='<div class="why-modal panel"><div class="why-modal-head"><div><div class="eyebrow">WHY IS THIS MOVING?</div><h2 id="whyAsset">Crude Oil · New York</h2></div><button id="whyClose" class="icon-btn" type="button" aria-label="Close">×</button></div><div class="why-kpis"><div><span>Local price</span><strong id="whyPrice">$0</strong></div><div><span>Reference move</span><strong id="whyMove">—</strong></div></div><p class="why-event" id="whyEventTitle">No repricing yet</p><div id="whyBreakdown" class="why-breakdown"></div><div class="why-foot"><span id="whyLeader">Top producer: —</span><small>Local price = global reference × structural hub basis × local conditions.</small></div></div>';
     document.body.appendChild(modal);
+  }
+
+  if(!document.getElementById('hubSheet')){
+    const sheet=document.createElement('div');sheet.id='hubSheet';sheet.className='hub-sheet-backdrop';sheet.setAttribute('aria-hidden','true');
+    sheet.innerHTML='<section class="hub-sheet" role="dialog" aria-modal="true" aria-labelledby="hubSheetTitle"><div class="hub-sheet-head"><div><div class="eyebrow">TRADING HUBS</div><h2 id="hubSheetTitle">Change market</h2></div><button class="hub-sheet-close" id="hubSheetClose" type="button" aria-label="Close hub picker">×</button></div><div class="hub-sheet-list" id="hubSheetList"></div></section>';
+    document.body.appendChild(sheet);
+  }
+
+  if(!document.getElementById('dayTransition')){
+    const transition=document.createElement('div');transition.id='dayTransition';transition.className='day-transition';transition.setAttribute('aria-hidden','true');
+    transition.innerHTML='<div class="day-transition-card"><div class="day-transition-day" id="dayTransitionDay">DAY 2</div><h2>Markets repriced</h2><p id="dayTransitionTitle">New world event</p><div class="day-transition-movers" id="dayTransitionMovers"></div></div>';
+    document.body.appendChild(transition);
   }
 }
 
