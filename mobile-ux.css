@@ -1,0 +1,53 @@
+/* Trade Wars mobile UX pass: HUD, compact hub selector, smart sizing, turn transition */
+.mobile-hud,.mobile-hub-summary,.hub-sheet-backdrop,.day-transition{display:none}
+
+.qty-meta>div{display:flex;align-items:center;gap:7px}
+.qty-max{border:1px solid rgba(82,217,255,.28);background:rgba(82,217,255,.08);color:var(--cyan);border-radius:7px;padding:3px 7px;font-size:8px;font-weight:900;line-height:1;cursor:pointer}
+.qty-max:active{transform:translateY(1px)}
+
+.day-transition{position:fixed;inset:0;z-index:1200;align-items:center;justify-content:center;background:rgba(2,8,12,.72);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .18s ease}
+.day-transition.show{display:flex;opacity:1;pointer-events:auto}
+.day-transition-card{width:min(520px,calc(100% - 34px));padding:28px;border:1px solid rgba(82,217,255,.25);border-radius:20px;background:linear-gradient(180deg,#102331,#07131c);box-shadow:0 28px 90px rgba(0,0,0,.5);text-align:center;transform:translateY(12px) scale(.98);animation:dayCardIn .24s ease forwards}
+.day-transition-day{color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:.2em}
+.day-transition-card h2{margin:8px 0 7px;font-size:clamp(28px,8vw,48px);letter-spacing:-.04em}
+.day-transition-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.day-transition-movers{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:16px}
+.day-transition-movers span{padding:6px 8px;border:1px solid var(--line);border-radius:999px;background:rgba(4,14,21,.7);font-size:10px;font-weight:800}
+@keyframes dayCardIn{to{transform:translateY(0) scale(1)}}
+
+@media(max-width:820px){
+  .mobile-hud{position:sticky;top:0;z-index:14;display:grid;grid-template-columns:.75fr .9fr 1.25fr;gap:7px;margin:-10px 0 16px;padding:7px;background:rgba(7,16,24,.92);backdrop-filter:blur(16px);border:1px solid rgba(140,164,179,.14);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .mobile-hud div{min-width:0;padding:5px 7px;border-radius:8px;background:rgba(13,27,39,.72)}
+  .mobile-hud span{display:block;color:var(--muted);font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  .mobile-hud strong{display:block;margin-top:2px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media(max-width:620px){
+  /* Replace the long hub list with one current-hub card and a bottom-sheet picker. */
+  [data-view-panel="markets"] .hub-grid{display:none!important}
+  .mobile-hub-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:14px;margin:0 0 6px;border:1px solid rgba(82,217,255,.26);border-radius:14px;background:linear-gradient(180deg,rgba(82,217,255,.08),rgba(13,26,35,.92))}
+  .mobile-hub-summary-main{display:flex;align-items:center;gap:11px;min-width:0}
+  .mobile-hub-summary-code{flex:0 0 46px;height:46px;display:grid;place-items:center;border-radius:11px;border:1px solid rgba(82,217,255,.28);color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:.08em}
+  .mobile-hub-summary-copy{min-width:0}.mobile-hub-summary-copy strong{display:block;font-size:15px}.mobile-hub-summary-copy span{display:block;margin-top:3px;color:var(--muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mobile-hub-change{flex:0 0 auto;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:#102633;color:var(--cyan);font-size:10px;font-weight:900}
+
+  .hub-sheet-backdrop{position:fixed;inset:0;z-index:1100;background:rgba(2,8,12,.68);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;padding:0}
+  .hub-sheet-backdrop.open{display:flex}
+  .hub-sheet{width:100%;max-height:min(76vh,680px);overflow:auto;border-radius:22px 22px 0 0;border:1px solid rgba(140,164,179,.18);border-bottom:0;background:#091721;box-shadow:0 -24px 70px rgba(0,0,0,.48);padding:18px 16px calc(22px + env(safe-area-inset-bottom))}
+  .hub-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:14px;position:sticky;top:-18px;z-index:2;margin:-18px -16px 12px;padding:18px 16px 12px;background:#091721}
+  .hub-sheet-head h2{margin:3px 0 0;font-size:20px}.hub-sheet-close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#102633;color:var(--text);font-size:21px}
+  .hub-sheet-list{display:grid;gap:8px}
+  .hub-sheet-option{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;background:#0d1d28;color:var(--text);text-align:left}
+  .hub-sheet-option.is-current{border-color:rgba(82,217,255,.45);background:rgba(82,217,255,.08)}
+  .hub-sheet-code{color:var(--cyan);font-size:11px;font-weight:900;letter-spacing:.08em}.hub-sheet-copy strong{display:block;font-size:13px}.hub-sheet-copy span{display:block;margin-top:2px;color:var(--muted);font-size:9px}
+  .hub-sheet-action{color:var(--cyan);font-size:9px;font-weight:900;text-align:right}.hub-sheet-action small{display:block;color:var(--muted);font-size:8px;font-weight:600;margin-top:2px}
+
+  .qty-max{font-size:9px;padding:4px 8px}
+  .day-transition-card{padding:24px 18px}
+}
+
+@media(max-width:390px){
+  .mobile-hud{grid-template-columns:.68fr .9fr 1.2fr;gap:5px;padding:5px}
+  .mobile-hud div{padding:5px}.mobile-hud strong{font-size:10px}
+  .mobile-hub-summary{padding:12px}.mobile-hub-change{padding:0 9px;font-size:9px}
+}
