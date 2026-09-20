@@ -1,5 +1,7 @@
 # Trade Wars — Presentable Prototype
 
+**Current release: v0.4 · Build 11**
+
 A responsive, no-build prototype for a topical global trade / markets strategy game.
 
 ## Run it
