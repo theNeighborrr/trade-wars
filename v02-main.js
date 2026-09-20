@@ -1,7 +1,8 @@
-import {initUI} from './v03-ui.js?v=2';
+import {initUI} from './v03-ui.js?cache=3';
+import {RELEASE_LABEL,RELEASE_VERSION,RELEASE_BUILD} from './release.js?cache=11';
 
 function addStyles(){
-  for(const href of ['v02.css','trade-controls.css?v=1','mobile-vertical.css?v=1','mobile-ux.css?v=1']){
+  for(const href of ['v02.css','trade-controls.css?v=1','mobile-vertical.css?v=1','mobile-ux.css?v=1','release.css?cache=11']){
     if(document.querySelector(`link[href="${href}"]`))continue;
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   }
@@ -9,6 +10,16 @@ function addStyles(){
 
 function upgradeDOM(){
   const topbar=document.querySelector('.topbar');
+  const titleBlock=topbar?.querySelector(':scope > div:first-child');
+  if(titleBlock&&!document.getElementById('releaseBadge')){
+    const badge=document.createElement('div');
+    badge.id='releaseBadge';badge.className='release-badge';
+    badge.innerHTML=`<span>Trade Wars</span><strong>${RELEASE_LABEL}</strong>`;
+    titleBlock.appendChild(badge);
+    document.title=`Trade Wars v${RELEASE_VERSION} — Global Market Strategy`;
+    document.documentElement.dataset.release=`v${RELEASE_VERSION}`;
+    document.documentElement.dataset.build=String(RELEASE_BUILD);
+  }
   if(topbar&&!document.getElementById('mobileHud')){
     const hud=document.createElement('div');
     hud.id='mobileHud';hud.className='mobile-hud';hud.setAttribute('aria-label','Current campaign status');
