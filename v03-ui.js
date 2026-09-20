@@ -2,6 +2,8 @@ import {STARTING_CASH,MAX_DAYS,assets,hubs,palette} from './v02-data.js';
 import {getState,getAsset,currentHub,hubFactor,localPrice,holdingsValue,netWorth,investedCost,unrealized,money,pct,signedMoney,trade,advanceDay,travelTo,resetState} from './v02-engine.js';
 
 let toastTimer;
+let dayTransitionTimer;
+const tradeSelection=new Map();
 const state=()=>getState();
 const leaderLine=asset=>`<span class="leader-line">${asset.leaderLabel} · ${asset.leader}</span>`;
 
@@ -57,6 +59,10 @@ function renderStats(){
   document.getElementById('currentHubCode').textContent=hub.code;
   document.getElementById('currentHubNote').textContent=hub.note;
   document.getElementById('currentHubRegion').textContent=hub.region;
+  const hudDay=document.getElementById('hudDay'),hudHub=document.getElementById('hudHub'),hudWorth=document.getElementById('hudWorth');
+  if(hudDay)hudDay.textContent=`${s.day} / ${MAX_DAYS}`;
+  if(hudHub)hudHub.textContent=hub.code;
+  if(hudWorth)hudWorth.textContent=money(worth);
 }
 
 function renderMarketStrip(){
@@ -72,31 +78,81 @@ function renderMarketStrip(){
   });
 }
 
+function openHubSheet(){
+  const sheet=document.getElementById('hubSheet');
+  if(!sheet)return;
+  sheet.classList.add('open');
+  sheet.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  document.getElementById('hubSheetClose')?.focus();
+}
+function closeHubSheet(){
+  const sheet=document.getElementById('hubSheet');
+  if(!sheet)return;
+  sheet.classList.remove('open');
+  sheet.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+
 function renderHubs(){
   const s=state(),wrap=document.getElementById('hubGrid');
   wrap.innerHTML='';
+  const sheetList=document.getElementById('hubSheetList');
+  if(sheetList)sheetList.innerHTML='';
+  const current=currentHub();
+  const summary=document.getElementById('mobileHubSummary');
+  if(summary){
+    summary.innerHTML=`<div class="mobile-hub-summary-main"><div class="mobile-hub-summary-code">${current.code}</div><div class="mobile-hub-summary-copy"><strong>${current.name}</strong><span>${current.note}</span></div></div><button class="mobile-hub-change" type="button">Change hub</button>`;
+    summary.querySelector('.mobile-hub-change')?.addEventListener('click',openHubSheet);
+  }
+
   hubs.forEach(hub=>{
     const here=hub.id===s.currentHub;
     const cheapest=assets.map(a=>({a,p:localPrice(a.id,hub.id)})).sort((x,y)=>x.p/x.a.price-y.p/y.a.price)[0];
+
     const card=document.createElement('article');
     card.className=`hub-card ${here?'is-current':''}`;
     card.innerHTML=`<div class="hub-card-top"><span class="hub-code">${hub.code}</span><span class="hub-region">${hub.region}</span></div><h3>${hub.name}</h3><p>${hub.note}</p><div class="hub-edge">Relative bargain <strong>${cheapest.a.ticker}</strong></div><button type="button" class="${here?'hub-here':'hub-travel'}" ${here?'disabled':''}>${here?'Current hub':`Travel · 1 day · ${money(hub.travelCost)}`}</button>`;
     const btn=card.querySelector('button');
     if(!here)btn.addEventListener('click',()=>doAction(travelTo(hub.id)));
     wrap.appendChild(card);
+
+    if(sheetList){
+      const option=document.createElement('button');
+      option.type='button';
+      option.className=`hub-sheet-option ${here?'is-current':''}`;
+      option.disabled=here;
+      option.innerHTML=`<span class="hub-sheet-code">${hub.code}</span><span class="hub-sheet-copy"><strong>${hub.name}</strong><span>${hub.note}</span></span><span class="hub-sheet-action">${here?'CURRENT':`TRAVEL<small>1 day · ${money(hub.travelCost)}</small>`}</span>`;
+      if(!here)option.addEventListener('click',()=>{
+        const result=travelTo(hub.id);
+        closeHubSheet();
+        doAction(result);
+      });
+      sheetList.appendChild(option);
+    }
   });
+}
+
+function quantitySteps(maxQty){
+  const max=Math.max(1,Math.floor(maxQty));
+  const base=[1,2,5,10,25,50,100,250,500,1000,2500,5000,10000];
+  return [...new Set([...base.filter(n=>n<=max),max])].sort((a,b)=>a-b);
 }
 
 function sliderMarkup(asset,price,s){
   const affordable=Math.max(0,Math.floor(s.cash/price));
   const owned=s.holdings[asset.id]||0;
   const maxQty=Math.max(1,affordable,owned);
-  return `<div class="trade-qty" data-asset="${asset.id}" data-price="${price}" data-affordable="${affordable}" data-owned="${owned}">
+  const steps=quantitySteps(maxQty);
+  const remembered=Math.min(maxQty,Math.max(1,tradeSelection.get(asset.id)||1));
+  let stepIndex=steps.findIndex(n=>n>=remembered);
+  if(stepIndex<0)stepIndex=steps.length-1;
+  return `<div class="trade-qty" data-asset="${asset.id}" data-price="${price}" data-affordable="${affordable}" data-owned="${owned}" data-steps="${steps.join(',')}">
     <div class="qty-slider-wrap">
-      <output class="qty-bubble">1 lot</output>
-      <input class="qty-slider" type="range" min="1" max="${maxQty}" value="1" step="1" aria-label="Trade quantity for ${asset.name}">
+      <output class="qty-bubble">${steps[stepIndex]} lot${steps[stepIndex]===1?'':'s'}</output>
+      <input class="qty-slider" type="range" min="0" max="${Math.max(0,steps.length-1)}" value="${stepIndex}" step="1" aria-label="Trade quantity for ${asset.name}">
     </div>
-    <div class="qty-meta"><span>Quantity</span><strong>1 / ${maxQty}</strong></div>
+    <div class="qty-meta"><span>Quantity</span><div><strong>${steps[stepIndex]} / ${maxQty}</strong><button class="qty-max" type="button">MAX</button></div></div>
   </div>`;
 }
 
@@ -105,6 +161,8 @@ function wireTradeControls(row,asset,price,s){
   const slider=row.querySelector('.qty-slider');
   const bubble=row.querySelector('.qty-bubble');
   const meta=row.querySelector('.qty-meta strong');
+  const maxButton=row.querySelector('.qty-max');
+  const steps=(row.querySelector('.trade-qty')?.dataset.steps||'1').split(',').map(Number).filter(Number.isFinite);
   const buy=document.createElement('button');
   const sell=document.createElement('button');
   buy.type='button';buy.className='buy';
@@ -113,23 +171,27 @@ function wireTradeControls(row,asset,price,s){
 
   const affordable=Math.max(0,Math.floor(s.cash/price));
   const owned=s.holdings[asset.id]||0;
-  const maxQty=Number(slider.max)||1;
+  const maxQty=steps[steps.length-1]||1;
+  const selectedQty=()=>steps[Math.max(0,Math.min(steps.length-1,Number(slider.value)||0))]||1;
 
   function sync(){
-    const qty=Math.max(1,Number(slider.value)||1);
-    const ratio=maxQty<=1?0:(qty-1)/(maxQty-1);
+    const idx=Math.max(0,Math.min(steps.length-1,Number(slider.value)||0));
+    const qty=selectedQty();
+    const ratio=steps.length<=1?0:idx/(steps.length-1);
     slider.style.setProperty('--slider-pct',`${ratio*100}%`);
     bubble.style.left=`${ratio*100}%`;
     bubble.textContent=`${qty} lot${qty===1?'':'s'}`;
     meta.textContent=`${qty} / ${maxQty}`;
+    tradeSelection.set(asset.id,qty);
     buy.textContent=`BUY · ${money(price*qty)}`;
     sell.textContent=`SELL · ${money(price*qty)}`;
     buy.disabled=qty>affordable||s.finished;
     sell.disabled=qty>owned||owned===0||s.finished;
   }
   slider.addEventListener('input',sync);
-  buy.addEventListener('click',()=>doAction(trade(asset.id,1,Number(slider.value)||1)));
-  sell.addEventListener('click',()=>doAction(trade(asset.id,-1,Number(slider.value)||1)));
+  maxButton?.addEventListener('click',()=>{slider.value=String(Math.max(0,steps.length-1));sync();});
+  buy.addEventListener('click',()=>doAction(trade(asset.id,1,selectedQty())));
+  sell.addEventListener('click',()=>doAction(trade(asset.id,-1,selectedQty())));
   sync();
 }
 
@@ -271,6 +333,39 @@ function renderHubEdge(){
 function renderAll(){
   renderEvent();renderStats();renderMarketStrip();renderHubs();renderMarketTable();renderPortfolioSnapshot();renderRecentEvents();renderIntel();renderPortfolio();renderChart();renderHubEdge();
 }
+
+function showDayTransition(){
+  const overlay=document.getElementById('dayTransition');
+  if(!overlay)return;
+  const s=state();
+  const movers=[...assets].sort((a,b)=>Math.abs(s.moves[b.id])-Math.abs(s.moves[a.id])).slice(0,3);
+  document.getElementById('dayTransitionDay').textContent=s.finished?'FINAL DAY':`DAY ${s.day}`;
+  document.getElementById('dayTransitionTitle').textContent=s.currentEvent.title;
+  const wrap=document.getElementById('dayTransitionMovers');
+  wrap.innerHTML='';
+  movers.forEach(asset=>{
+    const move=s.moves[asset.id];
+    const chip=document.createElement('span');
+    chip.className=move>0?'positive':move<0?'negative':'neutral';
+    chip.textContent=`${asset.ticker} ${pct(move)}`;
+    wrap.appendChild(chip);
+  });
+  overlay.classList.remove('show');
+  void overlay.offsetWidth;
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+  if(navigator.vibrate)navigator.vibrate(35);
+  clearTimeout(dayTransitionTimer);
+  dayTransitionTimer=setTimeout(()=>{overlay.classList.remove('show');overlay.setAttribute('aria-hidden','true');},1350);
+}
+
+function advanceTurn(){
+  const result=advanceDay();
+  showToast(result.message);
+  renderAll();
+  if(result.ok)showDayTransition();
+}
+
 function setView(view){
   document.querySelectorAll('[data-view-panel]').forEach(el=>el.classList.toggle('is-active',el.dataset.viewPanel===view));
   document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('is-active',el.dataset.view===view));
@@ -282,7 +377,7 @@ function setView(view){
 export function initUI(){
   document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>setView(btn.dataset.view)));
   document.querySelectorAll('[data-jump]').forEach(btn=>btn.addEventListener('click',()=>setView(btn.dataset.jump)));
-  document.getElementById('nextDayBtn').addEventListener('click',()=>doAction(advanceDay()));
+  document.getElementById('nextDayBtn').addEventListener('click',advanceTurn);
   document.getElementById('resetBtn').addEventListener('click',()=>{
     if(confirm('Reset this Trade Wars campaign? Your current run will be lost.')){
       resetState();renderAll();setView('dashboard');showToast('Fresh campaign started in New York.');
@@ -290,7 +385,10 @@ export function initUI(){
   });
   document.getElementById('whyClose').addEventListener('click',closeWhy);
   document.getElementById('whyModal').addEventListener('click',e=>{if(e.target.id==='whyModal')closeWhy();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWhy();});
+  document.getElementById('hubSheetClose')?.addEventListener('click',closeHubSheet);
+  document.getElementById('hubSheet')?.addEventListener('click',e=>{if(e.target.id==='hubSheet')closeHubSheet();});
+  document.getElementById('dayTransition')?.addEventListener('click',e=>{e.currentTarget.classList.remove('show');e.currentTarget.setAttribute('aria-hidden','true');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeWhy();closeHubSheet();}});
   window.addEventListener('resize',renderChart);
   const initial=(location.hash||'').replace('#','');
   setView(['markets','intel','portfolio'].includes(initial)?initial:'dashboard');
