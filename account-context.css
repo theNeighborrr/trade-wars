@@ -1,0 +1,18 @@
+/* Build 12: account context and position cost basis */
+.sidebar-account-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(140,164,179,.11)}
+.sidebar-account-grid>div{min-width:0;padding:8px 9px;border:1px solid rgba(140,164,179,.09);border-radius:9px;background:rgba(7,16,24,.38)}
+.sidebar-account-grid>div:last-child{grid-column:1/-1}
+.sidebar-account-grid span{display:block;color:var(--muted);font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.sidebar-account-grid strong{display:block;margin-top:3px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-account-grid small{display:block;margin-top:2px;color:var(--muted);font-size:8px}
+
+.position-cell{min-width:0}
+.position-cell strong{display:block;font-size:13px}
+.position-cell small{display:block;margin-top:3px;color:var(--muted);font-size:8px;white-space:nowrap}
+.position-cell.has-position small{color:#8fb7c7}
+
+@media(max-width:620px){
+  .position-cell{padding:7px 8px;border-radius:8px;background:#091722}
+  .position-cell strong{font-size:13px}
+  .position-cell small{font-size:9px}
+}
