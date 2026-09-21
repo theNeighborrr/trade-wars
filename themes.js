@@ -86,7 +86,7 @@ function syncTheme(){
   setText('.sidebar-foot span:last-child',theme.status);
   setText('#resetBtn',theme.reset);
   const next = document.getElementById('nextDayBtn');
-  if(next) next.textContent = next.disabled ? theme.complete : `${theme.advance} →`;
+  if(next) next.textContent = next.dataset.campaignPhase==='finished'?'View Results':next.dataset.campaignPhase==='closing'?'Close Campaign':`${theme.advance} →`;
   updateDesktopNav(theme);
   updateMobileNav(theme);
   setText('#themeCurrentName',theme.name);
@@ -190,6 +190,7 @@ function applyTheme(id){
   writeTheme(currentTheme.id);
   syncTheme();
   closeDrawer();
+  document.dispatchEvent(new CustomEvent('tw:theme-change'));
 }
 
 export function initThemes(){
@@ -206,6 +207,8 @@ export function initThemes(){
     if(e.key === 'Escape' && drawerOpen) closeDrawer();
   });
   window.addEventListener('hashchange',scheduleSync);
+  document.addEventListener('tw:render',scheduleSync);
+  document.dispatchEvent(new CustomEvent('tw:theme-change'));
 }
 
 export {themes,applyTheme};

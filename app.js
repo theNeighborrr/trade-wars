@@ -1,6 +1,6 @@
 (async () => {
   try {
-    await import('./v02-main.js?cache=14');
+    await import('./v02-main.js?cache=15');
   } catch (error) {
     console.error('Trade Wars core failed to load', error);
     const toast=document.getElementById('toast');
@@ -9,7 +9,7 @@
   }
 
   try {
-    const {initThemes}=await import('./themes.js?cache=7');
+    const {initThemes}=await import('./themes.js?cache=15');
     initThemes();
   } catch (error) {
     console.error('Trade Wars theme layer failed to load', error);

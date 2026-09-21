@@ -1,0 +1,1 @@
+{"name":"trade-wars","private":true,"type":"module","scripts":{"test":"node --test tests/engine-v05.test.mjs"}}
