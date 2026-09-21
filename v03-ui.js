@@ -35,7 +35,7 @@ function renderEvent(){
 }
 
 function renderStats(){
-  const s=state(),worth=netWorth(),pnl=worth-STARTING_CASH,held=holdingsValue(),hub=currentHub();
+  const s=state(),worth=netWorth(),pnl=worth-STARTING_CASH,held=holdingsValue(),lots=assets.reduce((sum,a)=>sum+(s.holdings[a.id]||0),0),hub=currentHub();
   document.getElementById('netWorth').textContent=money(worth);
   document.getElementById('cashValue').textContent=money(s.cash);
   document.getElementById('holdingsValue').textContent=money(held);
@@ -45,6 +45,11 @@ function renderStats(){
   document.getElementById('dayValue').textContent=`${s.day} / ${MAX_DAYS}`;
   document.getElementById('sideDay').textContent=`${s.day} / ${MAX_DAYS}`;
   document.getElementById('campaignProgress').style.width=`${(s.day/MAX_DAYS)*100}%`;
+  const sideCash=document.getElementById('sideCash'),sideInventory=document.getElementById('sideInventory'),sideInventoryLots=document.getElementById('sideInventoryLots'),sideWorth=document.getElementById('sideWorth');
+  if(sideCash)sideCash.textContent=money(s.cash);
+  if(sideInventory)sideInventory.textContent=money(held);
+  if(sideInventoryLots)sideInventoryLots.textContent=`${lots.toLocaleString()} lot${lots===1?'':'s'}`;
+  if(sideWorth)sideWorth.textContent=money(worth);
   document.getElementById('marketCash').textContent=money(s.cash);
   document.getElementById('investedKpi').textContent=money(investedCost());
   const un=document.getElementById('unrealizedKpi');
@@ -199,9 +204,9 @@ function renderMarketTable(){
   const s=state(),wrap=document.getElementById('marketTable');
   wrap.innerHTML='';
   assets.forEach(asset=>{
-    const row=document.createElement('div'),move=s.moves[asset.id],price=localPrice(asset.id);
+    const row=document.createElement('div'),move=s.moves[asset.id],price=localPrice(asset.id),owned=s.holdings[asset.id]||0,avg=s.avgCosts[asset.id]||0;
     row.className='market-row';
-    row.innerHTML=`<div class="asset-name"><strong>${asset.name}</strong><small>${asset.ticker} · ${asset.unit}</small>${leaderLine(asset)}</div><div class="market-price"><strong>${money(price)}</strong><small>${currentHub().code} local</small></div><div class="move-cell"><span class="${move>0?'positive':move<0?'negative':'neutral'}">${move===0?'—':pct(move)}</span><button class="why-btn" type="button">Why?</button></div><div>${s.holdings[asset.id]}</div><div class="exposure">${asset.sectors.map(x=>`<span class="sector-chip">${x}</span>`).join('')}</div><div class="trade-column">${sliderMarkup(asset,price,s)}<div class="trade-box trade-actions-stack"></div></div>`;
+    row.innerHTML=`<div class="asset-name"><strong>${asset.name}</strong><small>${asset.ticker} · ${asset.unit}</small>${leaderLine(asset)}</div><div class="market-price"><strong>${money(price)}</strong><small>${currentHub().code} local</small></div><div class="move-cell"><span class="${move>0?'positive':move<0?'negative':'neutral'}">${move===0?'—':pct(move)}</span><button class="why-btn" type="button">Why?</button></div><div class="position-cell ${owned>0?'has-position':''}"><strong>${owned}</strong><small>${owned>0?`Avg ${money(avg)}`:'No position'}</small></div><div class="exposure">${asset.sectors.map(x=>`<span class="sector-chip">${x}</span>`).join('')}</div><div class="trade-column">${sliderMarkup(asset,price,s)}<div class="trade-box trade-actions-stack"></div></div>`;
     row.querySelector('.why-btn').addEventListener('click',()=>openWhy(asset.id));
     wireTradeControls(row,asset,price,s);
     wrap.appendChild(row);
