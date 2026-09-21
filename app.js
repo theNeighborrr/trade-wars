@@ -1,6 +1,6 @@
 (async () => {
   try {
-    await import('./v02-main.js?cache=12');
+    await import('./v02-main.js?cache=13');
   } catch (error) {
     console.error('Trade Wars core failed to load', error);
     const toast=document.getElementById('toast');
