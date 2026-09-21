@@ -1,0 +1,3 @@
+[functions.trade-wars-leaderboard]
+# GET is public. POST verifies the caller via Auth /user inside the handler.
+verify_jwt = false

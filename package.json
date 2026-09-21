@@ -1,1 +1,9 @@
-{"name":"trade-wars","private":true,"type":"module","scripts":{"test":"node --test tests/engine-v05.test.mjs tests/engine-v06.test.mjs","test:balance":"node tests/balance-v06.mjs"}}
+{
+  "name": "trade-wars",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --import ./tests/register-rules.mjs --test tests/engine-v05.test.mjs tests/engine-v06.test.mjs tests/leaderboard.test.mjs",
+    "test:balance": "node tests/balance-v06.mjs"
+  }
+}
