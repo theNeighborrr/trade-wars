@@ -1,0 +1,101 @@
+/* Build 13: responsive market board + position P/L */
+@media(min-width:1181px){
+  .market-table-head,.market-row{
+    grid-template-columns:minmax(180px,1.25fr) minmax(92px,.58fr) minmax(92px,.54fr) minmax(112px,.66fr) minmax(130px,.82fr) minmax(280px,1.55fr)!important;
+  }
+  .trade-column{grid-template-columns:minmax(150px,1fr) minmax(112px,.62fr)}
+}
+
+@media(min-width:821px){
+  .market-table-head{
+    position:sticky;
+    top:0;
+    z-index:8;
+    background:rgba(10,21,31,.96);
+    backdrop-filter:blur(14px);
+  }
+  body[data-theme="terminal"] .market-table-head{background:#030c04!important}
+  body[data-theme="intel"] .market-table-head,
+  body[data-theme="newspaper"] .market-table-head{background:#e5dbc3!important}
+  body[data-theme="travel"] .market-table-head,
+  body[data-theme="briefcase"] .market-table-head{background:#eadfc7!important}
+}
+
+/* Medium desktop / windowed mode: two-line market rows, never horizontal scroll. */
+@media(min-width:821px) and (max-width:1180px){
+  .app-shell{grid-template-columns:210px minmax(0,1fr)}
+  .sidebar{padding:24px 15px 20px;gap:22px}
+  .main-content{padding:28px 20px 54px}
+
+  .market-table-wrap{overflow:visible!important;min-width:0!important;width:100%!important}
+  .market-table-head{display:none!important}
+  .market-row{
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    grid-template-columns:minmax(170px,1.35fr) minmax(88px,.62fr) minmax(86px,.58fr) minmax(122px,.8fr)!important;
+    grid-template-areas:
+      "asset price move position"
+      "exposure trade trade trade";
+    gap:10px 12px!important;
+    align-items:center;
+    padding:15px 16px!important;
+    border-top:1px solid rgba(140,164,179,.11);
+  }
+  .market-row>div{min-width:0!important}
+  .market-row>div:nth-child(1){grid-area:asset!important}
+  .market-row>div:nth-child(2){grid-area:price!important}
+  .market-row>div:nth-child(3){grid-area:move!important}
+  .market-row>div:nth-child(4){grid-area:position!important}
+  .market-row>div:nth-child(5){
+    grid-area:exposure!important;
+    display:flex!important;
+    align-items:center;
+    flex-wrap:wrap;
+    padding-top:3px;
+  }
+  .market-row>div:nth-child(6){
+    grid-area:trade!important;
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+  }
+
+  .trade-column{
+    width:100%!important;
+    max-width:none!important;
+    grid-template-columns:minmax(170px,1fr) 118px!important;
+    gap:12px!important;
+    align-items:end;
+  }
+  .trade-actions-stack{width:118px!important;max-width:118px!important}
+  .trade-actions-stack button{min-height:38px}
+  .qty-slider-wrap{padding-top:27px}
+
+  .sidebar-card{padding:13px}
+  .sidebar-account-grid{gap:6px}
+  .sidebar-account-grid>div{padding:7px}
+  .hub-sidebar-card p{font-size:10px;line-height:1.45}
+}
+
+/* Position context should read as one compact trading fact. */
+.position-cell strong{font-variant-numeric:tabular-nums}
+.position-cell small{line-height:1.35}
+.position-pl{font-weight:800;margin-left:2px}
+
+/* Terminal stays retro, but secondary trading data must remain readable. */
+body[data-theme="terminal"] .leader-line,
+body[data-theme="terminal"] .local-caption,
+body[data-theme="terminal"] .position-cell small,
+body[data-theme="terminal"] .why-btn,
+body[data-theme="terminal"] .qty-meta,
+body[data-theme="terminal"] .qty-meta strong{
+  font-size:10px!important;
+}
+body[data-theme="terminal"] .position-cell strong{font-size:14px}
+body[data-theme="terminal"] .sector-chip{font-size:9px}
+
+@media(max-width:620px){
+  .position-cell small{white-space:normal!important}
+  .position-pl{display:inline}
+}
