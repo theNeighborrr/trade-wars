@@ -1,6 +1,6 @@
 # Trade Wars — Presentable Prototype
 
-**Current release: v0.4 · Build 13**
+**Current release: v0.4 · Build 14**
 
 A responsive, no-build prototype for a topical global trade / markets strategy game.
 
@@ -42,3 +42,26 @@ A real product could replace the authored `scenarioDeck` in `app.js` with a back
 5. avoid using generative text to decide whether a political actor or election outcome is “good” or “bad.”
 
 This prototype intentionally uses no frameworks or external packages so it is easy to inspect and hand off.
+
+## Layout regression tests
+
+Build 14 uses `market-layout.css` as the market layout owner. It replaces the
+loaded `mobile-vertical.css` and `build13-market.css` patches. Cards adapt to the
+main content width after sidebar/padding: compact below 560px, two-line from
+560px, and a full table from 1080px. The compact hub picker is used through
+820px viewport width; the desktop hub grid wraps instead of scrolling sideways.
+
+Install the optional test dependencies and run:
+
+```bash
+python -m pip install playwright
+python -m playwright install chromium
+python tests/test_market_layout.py
+```
+
+Use `--themes terminal --layout-only` for a quick pass. Tests render the actual
+HTML/CSS/ES modules offline with resource URLs rewritten to in-memory blobs.
+WebStorage is emulated because the fixture uses an opaque origin. Tests cover
+27 viewport widths, all 13 themes, slider endpoints/midpoint, button geometry,
+buy/sell, cost basis, travel, advancing, save restoration, and sticky UI. They
+are Chromium checks, not a substitute for a physical Safari/iPhone test.

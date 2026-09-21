@@ -184,7 +184,7 @@ function wireTradeControls(row,asset,price,s){
     const qty=selectedQty();
     const ratio=steps.length<=1?0:idx/(steps.length-1);
     slider.style.setProperty('--slider-pct',`${ratio*100}%`);
-    bubble.style.left=`${ratio*100}%`;
+    bubble.style.setProperty('--bubble-pct',`${ratio*100}%`);
     bubble.textContent=`${qty} lot${qty===1?'':'s'}`;
     meta.textContent=`${qty} / ${maxQty}`;
     tradeSelection.set(asset.id,qty);

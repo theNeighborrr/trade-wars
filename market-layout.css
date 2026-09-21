@@ -1,0 +1,212 @@
+/* Build 14: one layout owner for the market board.
+   Use the space left AFTER the sidebar and page padding, not viewport guesses.
+   The narrow card layout is also the fallback for browsers without containers. */
+.main-content {
+  container: trade-desk / inline-size;
+  min-width: 0;
+}
+.topbar { flex-wrap: wrap; }
+.topbar > div { min-width: 0; max-width: 100%; }
+.topbar h1 { overflow-wrap: anywhere; }
+
+main .market-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow: visible;
+  transform: none !important;
+}
+main .market-table-head { display: none; min-width: 0; }
+#marketTable { min-width: 0; }
+#marketTable .market-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "asset asset" "price move" "position position" "exposure exposure" "trade trade";
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  padding: 16px;
+  overflow: visible;
+}
+#marketTable .market-row > div { min-width: 0; max-width: 100%; }
+#marketTable .asset-name { grid-area: asset; overflow-wrap: anywhere; }
+#marketTable .market-price { grid-area: price; }
+#marketTable .move-cell { grid-area: move; }
+#marketTable .position-cell { grid-area: position; }
+#marketTable .market-row > .exposure { grid-area: exposure; display: flex; flex-wrap: wrap; }
+#marketTable .market-row > .trade-column {
+  grid-area: trade !important;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 12px;
+  align-items: end;
+  width: 100%;
+  min-width: 0;
+}
+#marketTable .trade-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+#marketTable .trade-actions-stack button {
+  min-height: 44px;
+  padding: 8px !important;
+  font-size: 12px !important;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+#marketTable .asset-name strong { font-size: 16px; }
+#marketTable .asset-name small, #marketTable .leader-line { font-size: 11px; line-height: 1.4; }
+#marketTable .market-price strong { font-size: 17px; }
+#marketTable .market-price small { font-size: 11px; }
+#marketTable .position-cell { font-variant-numeric: tabular-nums; }
+#marketTable .position-cell strong { font-size: 14px; }
+#marketTable .position-cell small { white-space: normal; font-size: 12px; line-height: 1.45; }
+#marketTable .position-pl { display: inline-block; font-weight: 800; }
+#marketTable .why-btn { font-size: 12px; min-height: 36px; }
+#marketTable .sector-chip { font-size: 10px; }
+#marketTable .trade-qty { min-width: 0; }
+#marketTable .qty-slider-wrap { padding-top: 31px; }
+#marketTable .qty-slider { display: block; height: 32px; width: 100%; }
+#marketTable .qty-meta, #marketTable .qty-meta strong { font-size: 11px; line-height: 1.35; }
+#marketTable .qty-meta, #marketTable .qty-meta > div { flex-wrap: wrap; min-width: 0; }
+#marketTable .qty-meta { gap: 6px; }
+#marketTable .qty-meta strong { overflow-wrap: anywhere; }
+#marketTable .qty-max { min-height: 28px; font-size: 10px; padding: 5px 7px; }
+#marketTable .qty-bubble {
+  /* Keep both ends of the bubble inside the slider, including at MAX. */
+  left: clamp(0px, var(--bubble-pct, 0%), 100%) !important;
+  transform: translateX(calc(-1 * var(--bubble-pct, 0%)));
+  font-size: 11px;
+  max-width: 100%;
+}
+
+/* Hubs wrap at desktop sizes; phones/tablets use the existing hub picker. */
+main #hubGrid {
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 10px;
+  overflow: visible;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+main #hubGrid .hub-card { min-width: 0; display: flex; flex-direction: column; }
+main #hubGrid .hub-card button { margin-top: auto; padding: 8px 6px; white-space: normal; }
+main #hubGrid .hub-edge { margin-bottom: 10px; }
+main #hubGrid .hub-card p { min-height: 0; margin-bottom: 4px; }
+
+@container trade-desk (min-width: 340px) and (max-width: 559px) {
+  #marketTable .market-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas: "asset asset asset" "price move position" "exposure exposure exposure" "trade trade trade";
+  }
+}
+
+@container trade-desk (min-width: 560px) {
+  #marketTable .market-row {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.25fr);
+    grid-template-areas: "asset price move position" "exposure trade trade trade";
+    gap: 12px;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+  #marketTable .market-row > .trade-column { grid-template-columns: minmax(0, 1fr) 132px; }
+  #marketTable .market-row > .exposure { align-self: end; padding-bottom: 8px; }
+}
+
+@container trade-desk (min-width: 1080px) {
+  main .market-table-head, #marketTable .market-row {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, .6fr) minmax(0, .6fr) minmax(0, .95fr) minmax(0, .75fr) minmax(0, 2.1fr);
+    grid-template-areas: "asset price move position exposure trade";
+    gap: 12px;
+  }
+  main .market-table-head {
+    display: grid;
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    padding: 12px 16px;
+    background: var(--theme-panel, var(--panel));
+    color: var(--theme-muted, var(--muted));
+  }
+  main .market-table-head > span { min-width: 0; }
+  #marketTable .market-row > .exposure { align-self: center; padding-bottom: 0; }
+}
+
+/* Keep action controls usable when a sidebar leaves a narrow main column. */
+@container trade-desk (max-width: 799px) {
+  .topbar { align-items: flex-start; gap: 14px; }
+  .topbar-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 44px minmax(0, .85fr) minmax(0, 1.15fr);
+    gap: 8px;
+  }
+  .topbar-actions .theme-button {
+    display: grid !important;
+    grid-template: 1fr / 1fr !important;
+    place-items: center;
+    min-width: 44px !important;
+    width: 44px !important;
+    padding: 0 !important;
+  }
+  .topbar-actions .theme-button-icon { grid-row: auto; }
+  .topbar-actions .theme-button > span:nth-child(2), .topbar-actions .theme-button small { display: none; }
+  .topbar-actions #nextDayBtn, .topbar-actions #resetBtn {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 8px;
+    font-size: 12px;
+    white-space: normal;
+  }
+  .section-intro { flex-wrap: wrap; }
+  .section-intro > div { min-width: 0; max-width: 100%; }
+}
+
+@media (min-width: 821px) and (max-width: 1280px) {
+  .app-shell { grid-template-columns: 210px minmax(0, 1fr); }
+  .sidebar { padding: 24px 15px 20px; gap: 20px; }
+  .main-content { padding: 28px 20px 54px; }
+  .sidebar-card { padding: 13px; }
+  .sidebar-account-grid { gap: 6px; }
+  .sidebar-account-grid > div { padding: 7px; }
+}
+@media (min-width: 821px) {
+  .sidebar { overflow-y: auto; }
+  .sidebar > * { flex-shrink: 0; }
+}
+@media (max-width: 820px) {
+  main #hubGrid { display: none; }
+  .mobile-hud { top: env(safe-area-inset-top, 0px); }
+  .main-content { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .mobile-nav { height: calc(60px + env(safe-area-inset-bottom, 0px)); }
+}
+/* Paper themes need readable card details, not pale text on dark patches. */
+body:is([data-theme="intel"], [data-theme="newspaper"], [data-theme="travel"], [data-theme="briefcase"]) #marketTable .market-row {
+  background: var(--theme-panel);
+  color: var(--theme-text);
+}
+body:is([data-theme="intel"], [data-theme="newspaper"], [data-theme="travel"], [data-theme="briefcase"]) #marketTable .market-row > :is(.market-price, .move-cell, .position-cell) {
+  background: transparent;
+}
+body:is([data-theme="intel"], [data-theme="newspaper"], [data-theme="travel"], [data-theme="briefcase"]) #marketTable .position-cell small {
+  color: var(--theme-muted);
+}
+
+#marketTable .qty-bubble:after {
+  left: clamp(10px, var(--bubble-pct, 0%), calc(100% - 10px));
+}
+body[data-theme="terminal"] #marketTable .market-row {
+  background: #030c04;
+  border-color: #245e2a;
+}
+body[data-theme="terminal"] #marketTable .market-row > :is(.market-price, .move-cell, .position-cell) {
+  background: transparent;
+}

@@ -1,8 +1,8 @@
-import {initUI} from './v03-ui.js?cache=5';
-import {RELEASE_LABEL,RELEASE_VERSION,RELEASE_BUILD} from './release.js?cache=13';
+import {initUI} from './v03-ui.js?cache=14';
+import {RELEASE_LABEL,RELEASE_VERSION,RELEASE_BUILD} from './release.js?cache=14';
 
 function addStyles(){
-  for(const href of ['v02.css','trade-controls.css?v=1','mobile-vertical.css?v=1','mobile-ux.css?v=1','release.css?cache=11','account-context.css?cache=12','build13-market.css?cache=13']){
+  for(const href of ['v02.css','trade-controls.css?v=1','mobile-ux.css?cache=14','release.css?cache=11','account-context.css?cache=12','market-layout.css?cache=14']){
     if(document.querySelector(`link[href="${href}"]`))continue;
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   }
