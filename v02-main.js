@@ -1,8 +1,8 @@
 import {initUI} from './v06-ui.js?cache=16';
-import {RELEASE_LABEL,RELEASE_VERSION,RELEASE_BUILD} from './release.js?cache=16';
+import {RELEASE_LABEL,RELEASE_VERSION,RELEASE_BUILD} from './release.js?cache=17';
 
 function addStyles(){
-  for(const href of ['v02.css','trade-controls.css?v=1','mobile-ux.css?cache=14','release.css?cache=11','account-context.css?cache=12','market-layout.css?cache=14','v05-desk.css?cache=15','v06-houses.css?cache=16']){
+  for(const href of ['v02.css','trade-controls.css?v=1','mobile-ux.css?cache=14','release.css?cache=11','account-context.css?cache=12','market-layout.css?cache=14','v05-desk.css?cache=15','v06-houses.css?cache=16','v07-leaderboard.css?cache=17']){
     if(document.querySelector(`link[href="${href}"]`))continue;
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   }
@@ -93,3 +93,4 @@ addStyles();
 upgradeDOM();
 guardWealthCanvas();
 initUI();
+

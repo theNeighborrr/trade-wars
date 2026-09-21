@@ -1,0 +1,10 @@
+{
+  "rules": "0.6.0",
+  "sourceCommit": "b0baa09cb21ad8c5a12292258078ff06bea5de5e",
+  "sha256": {
+    "v02-data.js": "128fbafa5b3353f5c309bb6b3e1b1793a9ea5f637172a7754585999f53c9ce53",
+    "v05-data.js": "82821320169b07691215c7751c676f847faad3d3029d8d606f22b9a5befa8235",
+    "v06-data.js": "e1297a0b626e80d393f14fc3e4f6d80a20c30c8d376a0abf5d1b4b8a49c74c22",
+    "v06-engine.js": "747cff6aeb7ce0c350397fd33cff4bb01acc88667215ea5597aacb345c2ec36c"
+  }
+}
